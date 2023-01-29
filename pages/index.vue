@@ -15,13 +15,21 @@
           </div>
           <div v-else>
             <MovieList
-              v-if="typeof searchResults === 'object'"
+              v-if="searchResults && searchResults.length > 0"
               :movieList="searchResults"
             />
-            <div v-else>
-              {{ searchResults }}
+            <div v-else-if="searchResults && searchResults.length === 0">
+              Ничего не найдено
             </div>
           </div>
+          <v-alert
+            v-if="isServerError"
+            icon="mdi-alert-circle"
+            title="Ошибка сервера"
+            type="error"
+            variant="outlined"
+            :closable="true"
+          />
         </div>
       </v-col>
     </v-row>
@@ -31,10 +39,13 @@
 <script setup lang="ts">
 import { MovieResult, SearchResult } from "~~/types/Shared";
 
-const searchResults = ref<MovieResult[] | string>([]);
+const searchResults = ref<MovieResult[] | null>(null);
 const isLoading = ref<boolean>(false);
+const isServerError = ref<boolean>(false);
 
 const fetchData = async (searchValue: string) => {
+  isServerError.value = false;
+
   try {
     isLoading.value = true;
 
@@ -44,8 +55,9 @@ const fetchData = async (searchValue: string) => {
     const result: SearchResult = await response.json();
 
     if (result.results.length) searchResults.value = result.results;
-    else searchResults.value = "Ничего не найдено";
   } catch (e: any) {
+    isServerError.value = true;
+
     console.error(e.toString());
   }
 
