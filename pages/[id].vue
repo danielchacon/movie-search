@@ -3,85 +3,43 @@
     <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
     <div class="mb-4">
       <h1 class="text-h3">{{ data.title }}</h1>
-      <div class="text-body-1" v-if="data.type && data.type.length">
+      <div v-if="data.type" class="text-body-1">
         {{ data.type }}
       </div>
-      <div class="text-body-1" v-if="data.year && data.year.length">
+      <div v-if="data.year" class="text-body-1">
         {{ data.year }}
       </div>
     </div>
-
     <v-row v-if="data.image" class="mb-4">
       <v-col cols="12" sm="6">
         <v-img :src="data.image" />
       </v-col>
       <v-col cols="12" sm="6">
         <v-sheet class="pa-4 text-body-2" rounded color="grey-darken-1">
-          <div v-if="data.releaseDate && data.releaseDate.length">
-            Дата выхода: {{ data.releaseDate }}
-          </div>
-          <div
-            class="mt-2"
-            v-if="data.tvSeriesInfo && !data.tvSeriesInfo.yearEnd"
-          >
-            В стадии показа
-          </div>
-          <div
-            class="mt-2"
-            v-if="data.tvSeriesInfo && data.tvSeriesInfo.yearEnd"
-          >
-            Год завершения: {{ data.tvSeriesInfo.yearEnd }}
-          </div>
-          <div
-            class="mt-2"
-            v-if="
-              data.tvSeriesInfo &&
-              data.tvSeriesInfo.seasons &&
-              data.tvSeriesInfo.seasons.length
-            "
-          >
-            Сезоны: {{ data.tvSeriesInfo.seasons.length }}
-          </div>
-          <div class="mt-2" v-if="data.countries && data.countries.length">
-            Производство: {{ data.countries }}
-          </div>
-          <div class="mt-2" v-if="data.companies && data.companies.length">
-            Компании: {{ data.companies }}
-          </div>
-          <div class="mt-2" v-if="data.genres && data.genres.length">
-            Жанры: {{ data.genres }}
-          </div>
-          <div class="mt-2" v-if="data.directors && data.directors.length">
-            Режиссеры: {{ data.directors }}
-          </div>
-          <div class="mt-2" v-if="data.writers && data.writers.length">
-            Сценаристы: {{ data.writers }}
-          </div>
-          <div class="mt-2" v-if="data.awards && data.awards.length">
-            Награды: {{ data.awards }}
-          </div>
-          <div class="mt-2" v-if="data.imDbRating && data.imDbRating.length">
-            Рейтинг IMDb: {{ data.imDbRating }}
-          </div>
-          <div class="mt-2" v-if="data.stars && data.stars.length">
-            В главных ролях: {{ data.stars }}
+          <div v-for="(item, index) in info" :key="`info-${index}`">
+            <span v-if="item.label">{{ item.label + " " }}</span
+            >{{ item.value }}
           </div>
         </v-sheet>
       </v-col>
     </v-row>
-    <div v-if="data.plot && data.plot.length" class="text-body-1 mb-4">
+    <div v-if="data.plot" class="text-body-1 mb-4">
       {{ data.plot }}
     </div>
-    <div v-if="data.actorList && data.actorList.length" class="mb-4">
+    <div v-if="data.actorList" class="mb-4">
       <div class="text-h5 mb-4">Актерский состав:</div>
       <ActorList :actorList="data.actorList" />
     </div>
-    <div v-if="data.similars && data.similars.length">
+    <div v-if="data.similars">
       <div class="text-h5 mb-4">Похожие фильмы или сериалы:</div>
       <SimilarsList :movieList="data.similars" />
     </div>
   </v-container>
 </template>
+
+<script lang="ts">
+type Info = Array<{ [key: string]: string | number | null }>;
+</script>
 
 <script setup lang="ts">
 import { MovieDetails } from "~~/types/Shared";
@@ -102,6 +60,77 @@ const breadcrumbs = computed(() => {
       disabled: true,
     },
   ];
+});
+
+const info = computed<Info>(() => {
+  if (data.value) {
+    const {
+      releaseDate,
+      tvSeriesInfo,
+      countries,
+      companies,
+      genres,
+      directors,
+      writers,
+      awards,
+      imDbRating,
+      stars,
+    } = data.value;
+
+    const array: Info = [
+      {
+        label: "Дата выхода:",
+        value: releaseDate,
+      },
+      !!tvSeriesInfo
+        ? {
+            label: tvSeriesInfo.yearEnd ? "Год завершения:" : "",
+            value: tvSeriesInfo.yearEnd || "В стадии показа",
+          }
+        : {},
+      !!tvSeriesInfo
+        ? {
+            label: "Сезоны",
+            value: tvSeriesInfo.seasons.length,
+          }
+        : {},
+      {
+        label: "Производство:",
+        value: countries,
+      },
+      {
+        label: "Компании:",
+        value: companies,
+      },
+      {
+        label: "Жанры:",
+        value: genres,
+      },
+      {
+        label: "Режиссеры:",
+        value: directors,
+      },
+      {
+        label: "Сценаристы:",
+        value: writers,
+      },
+      {
+        label: "Награды:",
+        value: awards,
+      },
+      {
+        label: "Рейтинг IMDb:",
+        value: imDbRating,
+      },
+      {
+        label: "В главных ролях:",
+        value: stars,
+      },
+    ];
+
+    return array.filter((el) => !!el.value);
+  }
+  return [];
 });
 
 const fetchData = async () => {
