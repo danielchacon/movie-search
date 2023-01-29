@@ -1,16 +1,58 @@
-export interface Movie {
+export interface MovieResult {
   id: string;
+  resultType: string;
   image: string;
   title: string;
   description: string;
-  runtimeStr: string | null;
+}
+
+export interface MovieShort {
+  id: string;
+  title: string;
+  image: string;
+  imDbRating: string;
+}
+
+export interface SearchResult {
+  searchType: string;
+  expression: string;
+  results: MovieResult[];
+  errorMessage: string;
+}
+
+export interface Actor {
+  id: string;
+  image: string;
+  name: string;
+  asCharacter: string;
+}
+
+export interface MovieDetails {
+  id: string;
+  title: string;
+  type: string;
+  year: string;
+  image: string;
+  releaseDate: string;
+  plot: string;
+  awards: string;
+  directors: string;
+  writers: string;
+  stars: string;
+  actorList: Actor[];
   genres: string;
-  genreList: { key: string; value: string }[];
-  contentRating: string | null;
-  imDbRating: string | number | null;
-  imDbRatingVotes: string | number | null;
-  metacriticRating: string | number | null;
-  plot: string | null;
-  stars: string | null;
-  starList: { id: string; name: string }[] | null;
+  companies: string;
+  countries: string;
+  imDbRating: string;
+  similars: MovieShort[];
+  tvSeriesInfo: {
+    yearEnd: string;
+    creators: string;
+    creatorList: {
+      id: string;
+      name: string;
+    }[];
+    seasons: string[];
+  };
+  errorMessage: string;
 }

@@ -1,59 +1,92 @@
 <template>
-  <v-app>
-    <v-main>
-      <v-container v-if="data">
-        <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
-        <div class="mb-4">
-          <h1 class="text-h3 font-weight-bold mb-1">
-            {{ data.title }}
-          </h1>
-          <div class="text-subtitle">{{ data.year }}</div>
-        </div>
-        <v-row class="mb-3">
-          <v-col cols="12" sm="4">
-            <v-img :src="data.image"></v-img>
-          </v-col>
-          <v-col class="text-medium-emphasis">
-            <div class="mb-2">
-              <div>{{ data.genres }}</div>
-              <div>{{ data.countries }}</div>
-              <div>{{ data.runtimeStr }}</div>
-            </div>
-            <div class="mb-2">{{ data.companies }}</div>
-            <div class="mb-2">Режиссеры: {{ data.directors }}</div>
-            <div class="mb-2">Сценаристы: {{ data.writers }}</div>
-            <div>В главных ролях: {{ data.stars }}</div>
-          </v-col>
-        </v-row>
-        <div class="text-h5 mb-3">Сюжет:</div>
-        <div class="mb-3">{{ data.plot }}</div>
-        <div class="text-h5 mb-3">Актерский состав:</div>
-        <div class="actor-list d-flex flex-wrap">
-          <div
-            class="actor-list__item"
-            v-for="(item, index) in data.actorList"
-            :key="item.id"
-          >
-            <div class="d-flex pa-2">
-              <div>
-                <v-avatar>
-                  <v-img :src="item.image" cover></v-img>
-                </v-avatar>
-              </div>
-              <div class="ml-5">
-                <div>{{ item.name }}</div>
-                <div>{{ item.asCharacter }}</div>
-              </div>
-            </div>
+  <v-container v-if="data">
+    <v-breadcrumbs :items="breadcrumbs"></v-breadcrumbs>
+    <div class="mb-4">
+      <h1 class="text-h3">{{ data.title }}</h1>
+      <div class="text-body-1" v-if="data.type && data.type.length">
+        {{ data.type }}
+      </div>
+      <div class="text-body-1" v-if="data.year && data.year.length">
+        {{ data.year }}
+      </div>
+    </div>
+
+    <v-row v-if="data.image" class="mb-4">
+      <v-col cols="12" sm="6">
+        <v-img :src="data.image" />
+      </v-col>
+      <v-col cols="12" sm="6">
+        <v-sheet class="pa-4 text-body-2" rounded color="grey-darken-1">
+          <div v-if="data.releaseDate && data.releaseDate.length">
+            Дата выхода: {{ data.releaseDate }}
           </div>
-        </div>
-      </v-container>
-    </v-main>
-  </v-app>
+          <div
+            class="mt-2"
+            v-if="data.tvSeriesInfo && !data.tvSeriesInfo.yearEnd"
+          >
+            В стадии показа
+          </div>
+          <div
+            class="mt-2"
+            v-if="data.tvSeriesInfo && data.tvSeriesInfo.yearEnd"
+          >
+            Год завершения: {{ data.tvSeriesInfo.yearEnd }}
+          </div>
+          <div
+            class="mt-2"
+            v-if="
+              data.tvSeriesInfo &&
+              data.tvSeriesInfo.seasons &&
+              data.tvSeriesInfo.seasons.length
+            "
+          >
+            Сезоны: {{ data.tvSeriesInfo.seasons.length }}
+          </div>
+          <div class="mt-2" v-if="data.countries && data.countries.length">
+            Производство: {{ data.countries }}
+          </div>
+          <div class="mt-2" v-if="data.companies && data.companies.length">
+            Компании: {{ data.companies }}
+          </div>
+          <div class="mt-2" v-if="data.genres && data.genres.length">
+            Жанры: {{ data.genres }}
+          </div>
+          <div class="mt-2" v-if="data.directors && data.directors.length">
+            Режиссеры: {{ data.directors }}
+          </div>
+          <div class="mt-2" v-if="data.writers && data.writers.length">
+            Сценаристы: {{ data.writers }}
+          </div>
+          <div class="mt-2" v-if="data.awards && data.awards.length">
+            Награды: {{ data.awards }}
+          </div>
+          <div class="mt-2" v-if="data.imDbRating && data.imDbRating.length">
+            Рейтинг IMDb: {{ data.imDbRating }}
+          </div>
+          <div class="mt-2" v-if="data.stars && data.stars.length">
+            В главных ролях: {{ data.stars }}
+          </div>
+        </v-sheet>
+      </v-col>
+    </v-row>
+    <div v-if="data.plot && data.plot.length" class="text-body-1 mb-4">
+      {{ data.plot }}
+    </div>
+    <div v-if="data.actorList && data.actorList.length" class="mb-4">
+      <div class="text-h5 mb-4">Актерский состав:</div>
+      <ActorList :actorList="data.actorList" />
+    </div>
+    <div v-if="data.similars && data.similars.length">
+      <div class="text-h5 mb-4">Похожие фильмы или сериалы:</div>
+      <SimilarsList :movieList="data.similars" />
+    </div>
+  </v-container>
 </template>
 
 <script setup lang="ts">
-const data = ref<any | null>();
+import { MovieDetails } from "~~/types/Shared";
+
+const data = ref<MovieDetails>();
 
 const route = useRoute();
 
@@ -65,7 +98,7 @@ const breadcrumbs = computed(() => {
       href: "/",
     },
     {
-      title: data.value.title,
+      title: data.value?.title || route.params.id,
       disabled: true,
     },
   ];
@@ -76,9 +109,7 @@ const fetchData = async () => {
     const response = await fetch(
       new URL(`https://imdb-api.com/API/Title/k_i5x3559r/${route.params.id}`)
     );
-    const result = await response.json();
-
-    data.value = result;
+    data.value = await response.json();
   } catch (e: any) {
     console.error(e.toString());
   }
@@ -88,19 +119,3 @@ useAsyncData(async () => {
   await fetchData();
 });
 </script>
-
-<style lang="scss">
-.actor-list {
-  &__item {
-    width: 100%;
-
-    @media (min-width: 600px) {
-      width: 50%;
-    }
-
-    @media (min-width: 960px) {
-      width: calc(100% / 3);
-    }
-  }
-}
-</style>
