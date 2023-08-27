@@ -4,12 +4,12 @@
       <div class="d-flex">
         <div style="min-width: 100px">
           <v-avatar size="100">
-            <v-img :src="item.image" cover />
+            <v-img :src="item.image?.url ?? ''" cover />
           </v-avatar>
         </div>
         <div class="ml-4">
           <div class="text-h6 mb-2">{{ item.name }}</div>
-          <div class="text-body-1">{{ item.asCharacter }}</div>
+          <div class="text-body-1">{{ item.characters.join(", ") }}</div>
         </div>
       </div>
     </v-col>

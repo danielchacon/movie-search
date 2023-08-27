@@ -14,22 +14,13 @@
             <v-progress-circular :size="50" indeterminate></v-progress-circular>
           </div>
           <div v-else>
-            <MovieList
-              v-if="searchResults && searchResults.length > 0"
-              :movieList="searchResults"
-            />
+            <MovieList v-if="searchResults && searchResults.length > 0" :movieList="searchResults" />
             <div v-else-if="searchResults && searchResults.length === 0">
               Ничего не найдено
             </div>
           </div>
-          <v-alert
-            v-if="isServerError"
-            icon="mdi-alert-circle"
-            title="Ошибка сервера"
-            type="error"
-            variant="outlined"
-            :closable="true"
-          />
+          <v-alert v-if="isServerError" icon="mdi-alert-circle" title="Ошибка сервера" type="error" variant="outlined"
+            :closable="true" />
         </div>
       </v-col>
     </v-row>
@@ -49,12 +40,22 @@ const fetchData = async (searchValue: string) => {
   try {
     isLoading.value = true;
 
+    const fetchURL = `https://imdb8.p.rapidapi.com/title/find?q=${searchValue}`;
+    const options = {
+      headers: {
+        'X-RapidAPI-Key': 'e3a622655emsh801fe8ba93c331fp1b17a0jsnd06d752efd18',
+        'X-RapidAPI-Host': 'imdb8.p.rapidapi.com'
+      }
+    }
+
     const response = await fetch(
-      new URL(`https://imdb-api.com/API/Search/k_i5x3559r/${searchValue} `)
+      new URL(fetchURL),
+      options
     );
     const result: SearchResult = await response.json();
+    const searchResultsFiltered = result.results.filter(item => ['movie', 'tvSeries'].includes(item.titleType));
 
-    if (result.results.length) searchResults.value = result.results;
+    if (searchResultsFiltered.length) searchResults.value = searchResultsFiltered;
   } catch (e: any) {
     isServerError.value = true;
 

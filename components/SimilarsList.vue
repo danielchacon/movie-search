@@ -17,7 +17,7 @@
           >
             <v-img
               class="mb-2"
-              :src="item.image"
+              :src="item.image.url"
               :aspect-ratio="968 / 1227"
               cover
             />
@@ -30,15 +30,15 @@
 </template>
 
 <script setup lang="ts">
-import { MovieShort } from "~~/types/Shared";
+import { MovieBase } from "~~/types/Shared";
 
 interface Props {
-  movieList: Array<MovieShort>;
+  movieList: Array<MovieBase>;
 }
 
 const props = defineProps<Props>();
 
 const router = useRouter();
 
-const goToDetailedPage = (id: string) => router.push(id);
+const goToDetailedPage = (id: string) => router.push(id.split("/")[2]);
 </script>

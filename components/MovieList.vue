@@ -14,11 +14,11 @@
             v-bind="props"
           >
             <div style="min-width: 100px">
-              <v-img :src="item.image" :aspect-ratio="968 / 1227" cover />
+              <v-img :src="item.image?.url ?? ''" :aspect-ratio="968 / 1227" cover />
             </div>
             <div class="ml-4">
               <div class="text-h6 mb-2">{{ item.title }}</div>
-              <div class="text-body-1">{{ item.description }}</div>
+              <div class="text-body-1">{{ item.year }}</div>
             </div>
           </v-sheet>
         </template>
@@ -38,5 +38,5 @@ const props = defineProps<Props>();
 
 const router = useRouter();
 
-const goToDetailedPage = (id: string) => router.push(id);
+const goToDetailedPage = (id: string) => router.push(id.split("/")[2]);
 </script>

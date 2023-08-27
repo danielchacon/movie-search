@@ -5,3 +5,7 @@
 Приложение написано на Vue с использованием фреймворка Nuxt.js.
 
 Интерфейс сделан на компонентах Vuetify.
+
+## API
+
+https://rapidapi.com/apidojo/api/imdb8
