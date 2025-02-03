@@ -82,3 +82,113 @@ export interface FullCredits {
 }
 
 export type MoreLikeThis = string[];
+
+// ---------------------
+
+export type Schedule = {
+  time: string;
+  days: string[];
+};
+
+export type Rating = {
+  average: number;
+};
+
+export type Country = {
+  name: string;
+  code: string;
+  timezone: string;
+};
+
+export type Network = {
+  id: number;
+  name: string;
+  country: Country;
+  officialSite: string;
+};
+
+export type Externals = {
+  tvrage: number;
+  thetvdb: number;
+  imdb: string;
+};
+
+export type Image2 = {
+  medium: string;
+  original: string;
+};
+
+export type SelfLink = {
+  href: string;
+};
+
+export type PrevEpisodeLink = {
+  href: string;
+  name: string;
+};
+
+export type Links = {
+  self: SelfLink;
+  previousepisode?: PrevEpisodeLink;
+};
+
+export type Show = {
+  id: number;
+  url: string;
+  name: string;
+  type?: string | null;
+  language?: string | null;
+  genres?: string[];
+  status?: string | null;
+  runtime?: number | null;
+  averageRuntime?: number | null;
+  premiered?: string | null;
+  ended?: string | null;
+  officialSite?: string | null;
+  schedule?: Schedule | null;
+  rating?: Rating | null;
+  weight?: number | null;
+  network?: Network | null;
+  webChannel?: string | null;
+  dvdCountry?: string | null;
+  externals?: Externals | null;
+  image?: Image2 | null;
+  summary?: string | null;
+  updated?: number | null;
+  _links?: Links | null;
+};
+
+export type ShowSearchResult = {
+  score: number;
+  show: Show;
+};
+
+export type Person2 = {
+  id: number;
+  url: string;
+  name: string;
+  country?: Country | null;
+  birthday?: string | null;
+  deathday?: string | null;
+  gender?: string | null;
+  image?: Image2 | null;
+  updated?: number | null;
+  _links?: Links | null;
+};
+
+export type Character2 = {
+  id: number;
+  url: string;
+  name: string;
+  image?: Image | null;
+  _links?: Links | null;
+};
+
+export type CastItem = {
+  person?: Person2 | null;
+  character?: Character2 | null;
+  self?: boolean | null;
+  voice?: boolean | null;
+};
+
+export type Info = Array<{ [key: string]: string | number | null | undefined }>;

@@ -5,7 +5,7 @@
       cols="12"
       :key="item.id"
       style="cursor: pointer"
-      @click="goToDetailedPage(item.id)"
+      @click="goToDetailedPage(item.id.toString())"
     >
       <v-hover>
         <template v-slot:default="{ isHovering, props }">
@@ -14,11 +14,19 @@
             v-bind="props"
           >
             <div style="min-width: 100px">
-              <v-img :src="item.image?.url ?? ''" :aspect-ratio="968 / 1227" cover />
+              <v-img
+                :src="item.image?.medium ?? ''"
+                :aspect-ratio="968 / 1227"
+                cover
+              />
             </div>
+
             <div class="ml-4">
-              <div class="text-h6 mb-2">{{ item.title }}</div>
-              <div class="text-body-1">{{ item.year }}</div>
+              <div class="text-h6 mb-2">{{ item.name }}</div>
+
+              <div class="text-body-1">
+                {{ item.premiered + (item.ended ? ` - ${item.ended}` : '') }}
+              </div>
             </div>
           </v-sheet>
         </template>
@@ -28,15 +36,15 @@
 </template>
 
 <script setup lang="ts">
-import { MovieResult } from "~~/types/Shared";
+  import { type Show } from '~~/types/Shared';
 
-interface Props {
-  movieList: Array<MovieResult>;
-}
+  interface Props {
+    movieList: Array<Show>;
+  }
 
-const props = defineProps<Props>();
+  defineProps<Props>();
 
-const router = useRouter();
-
-const goToDetailedPage = (id: string) => router.push(id.split("/")[2]);
+  const goToDetailedPage = (id: string) => {
+    navigateTo(`/${id}`);
+  };
 </script>

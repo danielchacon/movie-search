@@ -1,4 +1,5 @@
 <template>
+  <NuxtLoadingIndicator />
   <v-app class="bg-grey-lighten-3">
     <v-main>
       <NuxtPage />
