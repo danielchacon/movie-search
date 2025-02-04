@@ -55,7 +55,11 @@
         `search/shows?q=${encodeURIComponent(searchValue)}`,
       );
 
-      searchResults.value = response || [];
+      searchResults.value = (response || []).sort((a, b) => {
+        const weightA = a.show?.weight ?? 0;
+        const weightB = b.show?.weight ?? 0;
+        return weightB - weightA;
+      });
       isSearched.value = true;
     } catch (error: any) {
       errorMessage.value = error.message;
